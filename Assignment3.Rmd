@@ -1,0 +1,194 @@
+---
+title: "Assignment3"
+output: html_document
+date: "2024-02-04"
+---
+
+```{r}
+Weather_Data<-read.csv("C:/Users/tesha/Downloads/Weather_Tijuana.csv")
+summary(Weather_Data)
+temperature_sd<-sd(Weather_Data$temperature)
+print(temperature_sd)
+#Scatterplot for monthly temperature
+set.seed(123)
+
+df <- Weather_Data
+
+df$timestamp <- as.POSIXct(df$timestamp, format="%Y-%m-%d %H:%M:%S")
+
+df$year_month <- format(df$timestamp, "%Y-%m")
+
+monthly_avg <- aggregate(temperature ~ year_month, data = df, FUN = mean)
+
+plot(as.Date(paste0(monthly_avg$year_month, "-01"), format = "%Y-%m-%d"), monthly_avg$temperature, 
+     type = "b", pch = 16,
+     main = "Monthly Temperature Scatterplot",
+     xlab = "Month", ylab = "Temperature",
+     xlim = range(as.Date(paste0(monthly_avg$year_month, "-01"), format = "%Y-%m-%d")))
+
+#Scatterplot for temperature weekly
+Weather_Data$timestamp <- as.POSIXct(Weather_Data$timestamp, format="%Y-%m-%d %H:%M:%S")
+
+Weather_Data$week <- format(Weather_Data$timestamp, "%Y-%U")
+
+weekly_avg <- aggregate(temperature ~ week, data = Weather_Data, FUN = mean)
+
+x_values <- as.Date(paste0(weekly_avg$week, "-1"), format = "%Y-%U-%u")
+y_values <- weekly_avg$temperature
+
+valid_indices <- complete.cases(x_values, y_values)
+x_values <- x_values[valid_indices]
+y_values <- y_values[valid_indices]
+
+plot(x_values, y_values, 
+     type = "b", pch = 16,
+     main = "Weekly Temperature Scatterplot",
+     xlab = "Week", ylab = "Temperature",
+     xlim = range(x_values, na.rm = TRUE))
+
+
+#Scatterplot for monthly pressure
+
+Weather_Data$year_month <- format(Weather_Data$timestamp, "%Y-%m")
+
+monthly_avg_pressure <- aggregate(pressure ~ year_month, data = Weather_Data, FUN = mean)
+
+plot(as.Date(paste0(monthly_avg_pressure$year_month, "-01"), format = "%Y-%m-%d"), monthly_avg_pressure$pressure, 
+     type = "b", pch = 16,
+     main = "Monthly Pressure Scatterplot",
+     xlab = "Month", ylab = "Pressure",
+     xlim = range(as.Date(paste0(monthly_avg_pressure$year_month, "-01"), format = "%Y-%m-%d")))
+
+#Scatterplot for Feels like Temp
+monthly_avg_feels_like <- aggregate(feels_like ~ year_month, data = Weather_Data, FUN = mean)
+
+plot(as.Date(paste0(monthly_avg_feels_like$year_month, "-01"), format = "%Y-%m-%d"), monthly_avg_feels_like$feels_like, 
+     type = "b", pch = 16,
+     main = "Feels Like Scatterplot",
+     xlab = "Month", ylab = "Feels Like",
+     xlim = range(as.Date(paste0(monthly_avg_feels_like$year_month, "-01"), format = "%Y-%m-%d")))
+
+#Plot for Pressure, monthly
+
+monthly_avg_pressure <- aggregate(pressure ~ year_month, data = Weather_Data, FUN = mean)
+
+plot(as.Date(paste0(monthly_avg_pressure$year_month, "-01"), format = "%Y-%m-%d"), monthly_avg_pressure$pressure, 
+     type = "b", pch = 16,
+     main = "Monthly Pressure Plot",
+     xlab = "Month", ylab = "Pressure",
+     xlim = range(as.Date(paste0(monthly_avg_pressure$year_month, "-01"), format = "%Y-%m-%d")))
+
+#Plot for minimum Temperature
+monthly_avg_temp_min <- aggregate(temp_min ~ year_month, data = Weather_Data, FUN = mean)
+
+
+plot(as.Date(paste0(monthly_avg_temp_min$year_month, "-01"), format = "%Y-%m-%d"), monthly_avg_temp_min$temp_min, 
+     type = "b", pch = 16,
+     main = "Monthly Minimum Temperature",
+     xlab = "Month", ylab = "Temp_min",
+     xlim = range(as.Date(paste0(monthly_avg_temp_min$year_month, "-01"), format = "%Y-%m-%d")))
+
+#Plot for maximum Temperature
+
+monthly_avg_temp_max <- aggregate(temp_max ~ year_month, data = Weather_Data, FUN = mean)
+
+plot(as.Date(paste0(monthly_avg_temp_max$year_month, "-01"), format = "%Y-%m-%d"), monthly_avg_temp_max$temp_max, 
+     type = "b", pch = 16,
+     main = "Monthly maximum Temperature",
+     xlab = "Month", ylab = "Temp_max",
+     xlim = range(as.Date(paste0(monthly_avg_temp_max$year_month, "-01"), format = "%Y-%m-%d")))
+
+#Plot for Wind Speed
+monthly_avg_wind_speed <- aggregate(wind_speed ~ year_month, data = Weather_Data, FUN = mean)
+
+plot(as.Date(paste0(monthly_avg_wind_speed$year_month, "-01"), format = "%Y-%m-%d"), monthly_avg_wind_speed$wind_speed, 
+     type = "b", pch = 16,
+     main = "Wind Speed Scatterplot",
+     xlab = "Month", ylab = "Wind Speed",
+     xlim = range(as.Date(paste0(monthly_avg_wind_speed$year_month, "-01"), format = "%Y-%m-%d")))
+
+#Plot for Wind Degree
+monthly_avg_wind_degree <- aggregate(wind_degree ~ year_month, data = Weather_Data, FUN = mean)
+
+plot(as.Date(paste0(monthly_avg_wind_degree$year_month, "-01"), format = "%Y-%m-%d"), monthly_avg_wind_degree$wind_degree, 
+     type = "b", pch = 16,
+     main = "Monthly Wind Degree plot",
+     xlab = "Month", ylab = "Wind Degree",
+     xlim = range(as.Date(paste0(monthly_avg_wind_degree$year_month, "-01"), format = "%Y-%m-%d")))
+
+#Plot for cloudiness
+monthly_avg_clouds <- aggregate(clouds ~ year_month, data = Weather_Data, FUN = mean)
+
+plot(as.Date(paste0(monthly_avg_clouds$year_month, "-01"), format = "%Y-%m-%d"), monthly_avg_clouds$clouds, 
+     type = "b", pch = 16,
+     main = "Monthly Clouds plot",
+     xlab = "Month", ylab = "Clouds",
+     xlim = range(as.Date(paste0(monthly_avg_clouds$year_month, "-01"), format = "%Y-%m-%d")))
+
+#Bar Chart for Weather Main
+monthly_weather_counts <- table(Weather_Data$year_month, Weather_Data$weather_main)
+
+df_monthly_weather_counts <- as.data.frame.matrix(monthly_weather_counts)
+
+barplot(as.matrix(df_monthly_weather_counts),
+        beside = TRUE,
+        legend.text = TRUE,
+        col = rainbow(ncol(df_monthly_weather_counts)),
+        main = "Monthly Weather Main Bar Chart",
+        xlab = "Month",
+        ylab = "Log(Frequency + 1)")
+
+#Bar Chart for Weather Description
+
+monthly_weather_counts <- table(Weather_Data$year_month, Weather_Data$weather_description)
+
+df_monthly_weather_counts <- as.data.frame.matrix(monthly_weather_counts)
+
+# Plotting the bar chart
+barplot(as.matrix(df_monthly_weather_counts),beside = TRUE,legend.text = TRUE,
+        col = rainbow(ncol(df_monthly_weather_counts)),
+        main = "Monthly Weather Description Bar Chart",
+        xlab = "Month",
+        ylab = "Frequency",
+        las = 2, 
+        cex.names = 0.7,width = 0.95 ) 
+
+boxplot(Weather_Data$temperature, 
+        main = "Boxplot of Temperature",
+        ylab = "Temperature")
+
+boxplot(Weather_Data$feels_like,
+        main = "Boxplot of Feels_like",
+        y = "Feels_like")
+
+boxplot(Weather_Data$pressure, main = "Boxplot of Pressure",y = "Pressure")
+
+boxplot(Weather_Data$humidity, main = "Boxplot of humidity", y = "Humidity")
+
+boxplot(Weather_Data$temp_min, main = "Boxplot of Min Temp", y ="temp_min")
+
+boxplot(Weather_Data$temp_max, main = "Boxplot of Max Temp", y = "temp_max")
+
+boxplot(Weather_Data$wind_speed, main = "Boxplot of Wind Speed", y = "Wind Speed")
+
+boxplot(Weather_Data$wind_degree, main = "Boxplot of wind degree", y = "Wind Degree")
+
+boxplot(Weather_Data$clouds, main = "Boxplot of Clouds", y = "clouds")
+
+hist(Weather_Data$temperature, main = "Histogram of Temperature",xlab = "Temperature",col = "skyblue",border = "black")
+
+hist(Weather_Data$feels_like, main = "Histogram of Feels Like", xlab = "Feels_Like", col="purple", border = "black")
+
+hist(Weather_Data$pressure, main = "Histogram of pressure", xlab = "Pressure", col="lightblue", border = "black")
+
+hist(Weather_Data$humidity, main = "Histogram of Humidity", xlab = "Humidity", col="seagreen", border = "black")
+
+hist(Weather_Data$temp_min, main = "Histogram of Min Temperature", xlab = "Temp_Min", col="lightblue", border = "black")
+
+hist(Weather_Data$temp_max, main = "Histogram of Max Temperature", xlab = "Temp_Max", col="navy", border = "black")
+
+hist(Weather_Data$wind_speed, main = "Histogram of Wind Speed", xlab = "Wind Speed", col="lightgreen", border = "black")
+
+hist(Weather_Data$wind_degree, main = "Histogram of Wind Degree", xlab = "Wind Degree", col="royalblue", border = "black")
+
+```
